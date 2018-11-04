@@ -12,7 +12,7 @@ using OpinionMining.Models;
 
 namespace OpinionMining.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;

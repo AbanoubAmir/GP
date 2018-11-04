@@ -1,7 +1,33 @@
-﻿@section SPAViews {
-    @Html.Partial("_Home")
-}
+﻿@*@section SPAViews {
+        @Html.Partial("_Home")
+    }*@
+@model List<Tuple<string, float?>>
+
+<div class="row">
+    <div class="col-md-8">
+        @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="text" name="Query" /><br />
+            </div>
+        </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Search" class="btn btn-default" />
+                </div>
+            </div>
+            foreach (var x in Model)
+            {
+                @Html.Raw(x.Item1)
+                <textarea>SENTIMENT VALUE =  @x.Item2.ToString()</textarea>
+            }
+        }
+    </div>
+    
+</div>
 @section Scripts{
     @Scripts.Render("~/bundles/knockout")
     @Scripts.Render("~/bundles/app")
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 }
