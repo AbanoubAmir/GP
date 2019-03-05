@@ -10,6 +10,9 @@ using Tweetinvi;
 using Tweetinvi.Exceptions;
 using Tweetinvi.Models;
 using Tweetinvi.Parameters;
+using NewsAPI;
+using NewsAPI.Models;
+using NewsAPI.Constants;
 
 namespace OpinionMining.Classes
 {
@@ -17,6 +20,7 @@ namespace OpinionMining.Classes
     {
         private readonly string CK, CS, AT, ATS, UN, PAS, URL;
         private NaturalLanguageUnderstandingExample nlp;
+        public List<Tuple<string, float?>> scores;
         public PrototypeFunctions()
         {
             CK = WebConfigurationManager.AppSettings["consumer_key"];
@@ -33,9 +37,32 @@ namespace OpinionMining.Classes
             RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackOnly;
 
         }
+        public void GetNews(string Query)
+        {
+            scores = new List<Tuple<string, float?>>();
+            var newsApiClient = new NewsApiClient("a96b258ae04044d79886855bb03003a1");
+            var articlesResponse = newsApiClient.GetEverything(new EverythingRequest
+            {
+                Q = Query,
+                SortBy = SortBys.Popularity,
+                Language = Languages.AR,
+                //From = new DateTime(2019, 2, 9)
+            });
+            if (articlesResponse.Status == Statuses.Ok)
+            {
+                foreach (var article in articlesResponse.Articles)
+                {
+                    float? x = nlp.Analyze(article.Url);
+                    string y = article.Url;
+                    scores.Add(new Tuple<string, float?>(y, x));
+                    
+                }
+            }
+            //return scores;
+        }
         public List<Tuple<string,float ?>> FetchTweets(string Query)
         {
-            List<Tuple<string, float?>> scores = new List<Tuple<string, float?>>();
+            scores = new List<Tuple<string, float?>>();
             try
             {
                 var searchParameter = new SearchTweetsParameters(Query)
@@ -43,7 +70,7 @@ namespace OpinionMining.Classes
                     Lang = LanguageFilter.English,
                     SearchType = SearchResultType.Popular,
                     MaximumNumberOfResults = 10,
-                    Filters = TweetSearchFilters.Hashtags
+                    //Filters = TweetSearchFilters.News
                 };
                 var tweets = Search.SearchTweets(searchParameter);
                 foreach (var tweet in tweets)
@@ -91,7 +118,9 @@ namespace OpinionMining.Classes
         {
             Parameters parameters = new Parameters()
             {
-                Text = _nluText,
+                //Url = _nluText,
+                //Language= "ar",
+                Text=_nluText,
                 Features = new Features()
                 {
                     Sentiment = new SentimentOptions()

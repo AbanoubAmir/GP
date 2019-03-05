@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Configuration;
 using System.Web.Mvc;
 
@@ -22,7 +23,11 @@ namespace OpinionMining.Controllers
         public ActionResult Index(string Query)
         {
             PrototypeFunctions pf = new PrototypeFunctions();
-            return View(pf.FetchTweets(Query));
+            /*Task T = Task.Run(() => pf.GetNews(Query));
+            Task NT = T.ContinueWith(t => Console.WriteLine("In ContinueWith"));
+            NT.Wait();*/
+            pf.FetchTweets(Query);
+            return View(pf.scores);
         }
     }
 }
