@@ -41,10 +41,9 @@ namespace OpinionMining.Classes
         {
             scores = new List<Tuple<string, float?>>();
             var newsApiClient = new NewsApiClient("a96b258ae04044d79886855bb03003a1");
-            var articlesResponse = newsApiClient.GetEverything(new EverythingRequest
+            var articlesResponse = newsApiClient.GetTopHeadlines(new TopHeadlinesRequest
             {
                 Q = Query,
-                SortBy = SortBys.Popularity,
                 Language = Languages.AR,
                 //From = new DateTime(2019, 2, 9)
             });
@@ -69,13 +68,13 @@ namespace OpinionMining.Classes
                 {
                     Lang = LanguageFilter.English,
                     SearchType = SearchResultType.Popular,
-                    MaximumNumberOfResults = 10,
-                    //Filters = TweetSearchFilters.News
+                    MaximumNumberOfResults = 20,
+                    //Filters = TweetSearchFilters.
                 };
                 var tweets = Search.SearchTweets(searchParameter);
                 foreach (var tweet in tweets)
                 {
-                    float? x = nlp.Analyze(Sanitize(tweet.FullText));
+                    float? x = nlp.Analyze(tweet.FullText);
                     string y = tweet.GenerateOEmbedTweet().HTML;
                     scores.Add(new Tuple<string, float?>(y, x));
                     //Console.WriteLine(Environment.NewLine + "Sentiment Score: " + x.ToString() + " " + label + Environment.NewLine + "(" + tweet.FullText + ")");
@@ -119,7 +118,7 @@ namespace OpinionMining.Classes
             Parameters parameters = new Parameters()
             {
                 //Url = _nluText,
-                //Language= "ar",
+                Language= "en",
                 Text=_nluText,
                 Features = new Features()
                 {
